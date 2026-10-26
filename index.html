@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>测测你像历史上的谁 | 拿的是什么大女主/大男主剧本？</title>
+    <style>
+        /* 古风莫兰迪色系 */
+        :root {
+            --bg-color: #F9F6F0; /* 宣纸底色 */
+            --primary-color: #5C7C74; /* 黛蓝色/竹青色 */
+            --primary-dark: #435D56;
+            --text-main: #3A3A3A;
+            --text-sub: #888888;
+            --card-bg: #FFFFFF;
+            --border-color: #EBE6DB;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif; line-height: 1.6; display: flex; justify-content: center; min-height: 100vh; }
+        #app { width: 100%; max-width: 480px; background: var(--bg-color); padding: 20px; display: flex; flex-direction: column; position: relative; overflow-x: hidden; }
+        
+        /* 顶部标题 */
+        .header { text-align: center; padding: 20px 0 10px; }
+        .header h1 { font-size: 20px; font-weight: 600; color: var(--primary-dark); letter-spacing: 1px; }
+        .header p { font-size: 12px; color: var(--text-sub); margin-top: 5px; }
+
+        .page { display: none; flex-direction: column; animation: fadeIn 0.4s ease; }
+        .page.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 封面 */
+        .cover { text-align: center; padding: 40px 20px; background: var(--card-bg); border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-top: 30px; border: 1px solid var(--border-color); }
+        .cover h2 { font-size: 22px; color: var(--primary-dark); margin-bottom: 20px; line-height: 1.4; }
+        .cover p { font-size: 14px; color: var(--text-sub); margin-bottom: 40px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 15px 30px; border-radius: 30px; font-size: 16px; font-weight: 500; width: 100%; cursor: pointer; transition: background 0.3s; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(92, 124, 116, 0.2); }
+        .btn:active { background-color: var(--primary-dark); }
+
+        /* 答题区 */
+        .quiz-header { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .progress-bar { height: 6px; background: var(--border-color); border-radius: 3px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary-color); width: 0%; transition: width 0.3s ease; }
+        .question-text { font-size: 18px; font-weight: 600; margin-bottom: 25px; color: var(--text-main); }
+        .options { display: flex; flex-direction: column; gap: 15px; }
+        .option { background: var(--card-bg); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: 16px; font-size: 15px; color: var(--text-main); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .option:active { transform: scale(0.98); }
+        .option.selected { border-color: var(--primary-color); background-color: #F4F7F6; color: var(--primary-dark); font-weight: 500; box-shadow: 0 2px 10px rgba(92, 124, 116, 0.15); }
+
+        /* 结果区 */
+        .result-card { background: var(--card-bg); border-radius: 24px; padding: 30px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .badge-wrapper { text-align: center; }
+        .badge { font-size: 12px; color: #fff; background: #A38C7A; display: inline-block; padding: 4px 14px; border-radius: 20px; margin: 0 auto 15px auto; font-weight: 500; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(163, 140, 122, 0.3); }
+        .result-title { text-align: center; font-size: 14px; color: var(--text-sub); margin-bottom: 5px; }
+        .result-name { text-align: center; font-size: 26px; font-weight: bold; color: var(--primary-dark); margin-bottom: 15px; }
+        .result-content { font-size: 14px; color: var(--text-main); line-height: 1.8; text-align: justify; }
+        .result-content p { margin-bottom: 12px; }
+        .result-content strong { color: var(--primary-dark); }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; }
+        .tag { background: #F4F7F6; color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #EBE6DB; }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="header">
+        <h1>测测你像历史上的谁？</h1>
+        <p>你拿的是什么大女主/大男主剧本？</p>
+    </div>
+
+    <div id="page-cover" class="page active">
+        <div class="cover">
+            <h2>如果穿越回古代<br>你的灵魂最像谁？</h2>
+            <p>15道现代生活情境题，探测你的内在性格底色。<br>凭第一直觉选，不要想太久哦。</p>
+            <button class="btn" onclick="startQuiz()">开启前世今生</button>
+        </div>
+    </div>
+
+    <div id="page-quiz" class="page">
+        <div class="quiz-header"><span id="q-current">1</span>/<span id="q-total">15</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="question-text" id="question-text">加载中...</div>
+        <div class="options" id="options-container"></div>
+    </div>
+
+    <div id="page-result" class="page">
+        <div class="result-card">
+            <div class="badge-wrapper">
+                <div class="badge" id="test-count-badge">数据加载中...</div>
+            </div>
+            <div class="result-title">你的历史灵魂伴侣是</div>
+            <div class="result-name" id="res-name">人物名</div>
+            <div class="tags" id="res-tags"></div>
+            <div class="result-content" id="res-content"></div>
+        </div>
+        <button class="btn" onclick="restartQuiz()" style="margin-bottom: 30px;">重新穿越</button>
+    </div>
+</div>
+
+<script>
+    // 维度：ambition(进取/野心), wisdom(智慧/谋略), romantic(浪漫/洒脱), steady(沉稳/务实)
+    const questions = [
+        { q: "在团队中遇到一个极其棘手的项目，你通常会？", opts: [{t: "主动站出来当Leader，带领大家冲", val: {ambition: 9}}, {t: "先冷静分析利弊，给出核心策略", val: {wisdom: 9}}, {t: "用幽默缓解大家的焦虑，顺其自然", val: {romantic: 9}}, {t: "默默把执行细节做好，稳扎稳打", val: {steady: 9}}] },
+        { q: "面对别人对你的误解或非议，你的态度是？", opts: [{t: "必须当面怼回去，绝不内耗", val: {ambition: 8, romantic: 2}}, {t: "搜集证据，用事实和逻辑打脸", val: {wisdom: 9}}, {t: "懂我的人自然懂，懒得解释", val: {romantic: 9, steady: 2}}, {t: "有则改之，无则加勉，专注自己", val: {steady: 9}}] },
+        { q: "周末你更向往哪种放松方式？", opts: [{t: "参加高端局，结交有用的人脉", val: {ambition: 8}}, {t: "一个人看书、研究某项新技能", val: {wisdom: 8, steady: 2}}, {t: "去大自然里喝酒、赏花、看月亮", val: {romantic: 9}}, {t: "把家里大扫除一遍，做顿好吃的", val: {steady: 9}}] },
+        { q: "如果遇到非常喜欢的人，你会？", opts: [{t: "直接拿下，喜欢就要占有", val: {ambition: 9}}, {t: "默默观察，觉得合适再布个局", val: {wisdom: 8, steady: 2}}, {t: "为ta写诗、弹琴，制造极致浪漫", val: {romantic: 9}}, {t: "用无微不至的照顾让ta习惯我", val: {steady: 9}}] },
+        { q: "对于金钱和物质，你的真实看法是？", opts: [{t: "权力和财富是立足之本，越多越好", val: {ambition: 9}}, {t: "够用就行，重点是如何管理和投资", val: {wisdom: 8, steady: 2}}, {t: "千金散尽还复来，开心最重要", val: {romantic: 9}}, {t: "必须存钱，看着账户余额才有安全感", val: {steady: 9}}] },
+        { q: "当你在职场上被空降的领导压制时，你会？", opts: [{t: "暗中积攒实力，随时准备取代ta", val: {ambition: 9}}, {t: "分析ta的弱点，借力打力", val: {wisdom: 9}}, {t: "此处不留爷自有留爷处，直接裸辞", val: {romantic: 8, ambition: 2}}, {t: "做好分内事，等ta自己犯错", val: {steady: 9}}] },
+        { q: "别人对你的第一印象，通常带哪个词？", opts: [{t: "气场强，有野心", val: {ambition: 9}}, {t: "聪明，看不透", val: {wisdom: 9}}, {t: "随性，有趣", val: {romantic: 9}}, {t: "靠谱，老实", val: {steady: 9}}] },
+        { q: "朋友大半夜找你哭诉失恋，你会？", opts: [{t: "“别哭了，明天带你去搞钱/找新欢”", val: {ambition: 8}}, {t: "一针见血指出问题，帮ta复盘", val: {wisdom: 9}}, {t: "陪ta痛骂渣男/渣女，一醉方休", val: {romantic: 9}}, {t: "默默点个外卖，听ta慢慢倾诉", val: {steady: 9}}] },
+        { q: "你对自己人生的终极期待是？", opts: [{t: "建功立业，在历史上留下姓名", val: {ambition: 9}}, {t: "运筹帷幄，成为幕后大Boss", val: {wisdom: 9}}, {t: "游历四方，体验极致的爱与自由", val: {romantic: 9}}, {t: "家庭美满，平淡安稳地过完一生", val: {steady: 9}}] },
+        { q: "面对未知的冒险机会，你的第一反应是？", opts: [{t: "富贵险中求，冲就完事了", val: {ambition: 9}}, {t: "先评估风险，给自己留好退路", val: {wisdom: 9}}, {t: "太好玩了，立刻收拾行李出发", val: {romantic: 9}}, {t: "算了吧，现在的生活挺好的", val: {steady: 9}}] },
+        { q: "你最难忍受身边的人有什么特质？", opts: [{t: "不思进取，拖我后腿", val: {ambition: 9}}, {t: "愚蠢且固执，听不懂人话", val: {wisdom: 9}}, {t: "极其无趣，没有生活情调", val: {romantic: 9}}, {t: "情绪不稳定，朝令夕改", val: {steady: 9}}] },
+        { q: "如果把你的人生拍成电影，会是什么类型？", opts: [{t: "大女主/大男主逆袭爽剧", val: {ambition: 9}}, {t: "悬疑烧脑、步步为营的权谋剧", val: {wisdom: 9}}, {t: "浪漫唯美的公路文艺片", val: {romantic: 9}}, {t: "治愈温馨的家庭纪录片", val: {steady: 9}}] },
+        { q: "在饭局上，你通常是哪种状态？", opts: [{t: "控场者，把握话题和节奏", val: {ambition: 8}}, {t: "观察者，看破不说破", val: {wisdom: 9}}, {t: "气氛组，负责搞笑和干杯", val: {romantic: 9}}, {t: "干饭人，默默吃菜照顾大家", val: {steady: 9}}] },
+        { q: "遇到重大决策时，你更依赖什么？", opts: [{t: "我的直觉和对成功的渴望", val: {ambition: 9}}, {t: "严密的逻辑分析和数据", val: {wisdom: 9}}, {t: "我当下的心情和感觉", val: {romantic: 9}}, {t: "长辈/有经验者的建议", val: {steady: 9}}] },
+        { q: "用一句话总结你的人生态度？", opts: [{t: "我命由我不由天", val: {ambition: 9}}, {t: "知己知彼，百战不殆", val: {wisdom: 9}}, {t: "人生得意须尽欢", val: {romantic: 9}}, {t: "不以物喜，不以己悲", val: {steady: 9}}] }
+    ];
+
+    const figures = [
+        // 进取型
+        { name: "👑 武则天", dim: {ambition: 9, wisdom: 7, romantic: 2, steady: 5}, tags: ["大女主", "目标导向", "气场全开"], text: "👑 <strong>【你的性格】</strong> 你的骨子里刻着绝对的野心和不服输。你像武则天一样，有着极强的目标感和行动力，从来不相信什么“命中注定”，你只相信“我命由我不由天”。在职场和生活中，你绝对是那个能扛事、能破局的狠角色。<br><br>💡 <strong>【隐藏反差】</strong> 外表看着无坚不摧、杀伐果断，其实内心极重感情。只是你太清醒了，知道感情不能当饭吃，所以你宁愿把软肋藏起来，用铠甲面对世界。<br><br>⚠️ <strong>【小建议】</strong> 适当允许自己脆弱一下，偶尔停下来看看风景。不要把所有压力都自己扛，学会把任务分出去。" },
+        { name: "🐎 曹操", dim: {ambition: 8, wisdom: 8, romantic: 4, steady: 5}, tags: ["枭雄", "务实清醒", "反内耗"], text: "⚔️ <strong>【你的性格】</strong> 你是一个极其务实、雷厉风行的人。你有着曹操般的魄力，讨厌一切形式主义和内耗。你的座右铭大概率是“宁教我负天下人，休教天下人负我”（精神层面）。你极度看重效率和结果，是团队里的核心发动机。<br><br>💡 <strong>【隐藏反差】</strong> 别人以为你冷酷无情，其实你非常爱才惜才，对真正懂你的人可以极度宽容。你的内心深处也有浪漫的一面（比如曹操也是个诗人）。<br><br>⚠️ <strong>【小建议】</strong> 偶尔需要收敛一下锋芒和攻击性。在沟通时多一点耐心，会让你的路走得更宽。" },
+        { name: "🇫🇷 拿破仑", dim: {ambition: 9, wisdom: 6, romantic: 4, steady: 3}, tags: ["行动派", "自信爆棚", "征服者"], text: "⚔️ <strong>【你的性格】</strong> “不想当将军的士兵不是好士兵”。你天生带着一股舍我其谁的自信，无论把你丢到多烂的牌局里，你都敢直接叫地主。你不怕失败，因为你享受征服困难的过程。<br><br>💡 <strong>【隐藏反差】</strong> 看起来像个狂人，其实你私底下很好学，而且对爱情有着狂热甚至有点恋爱脑的一面。<br><br>⚠️ <strong>【小建议】</strong> 在冲锋陷阵前，稍微留一点时间做风险评估。过于自信有时会让人忽略潜在的危险。" },
+        // 智慧型
+        { name: "🪶 诸葛亮", dim: {ambition: 5, wisdom: 10, romantic: 3, steady: 7}, tags: ["智性恋", "深谋远虑", "操心命"], text: "🪭 <strong>【你的性格】</strong> 你是朋友眼中的“智商天花板”，不管遇到多乱的事情，你总能迅速找出破局点。你像诸葛亮一样，运筹帷幄，做事滴水不漏。你习惯于在行动之前，在脑子里下完一整盘棋。<br><br>💡 <strong>【隐藏反差】</strong> 别看平时稳如泰山，其实你内心极度心软。你也渴望有个能完全懂你、不需要你解释半句的人，能让你卸下防备。<br><br>⚠️ <strong>【小建议】</strong> 放下你手里那本《出师表》吧！不是所有事都要你亲力亲为，学会抓大放小，给自己放个假。" },
+        { name: "🌙 张良", dim: {ambition: 4, wisdom: 9, romantic: 6, steady: 5}, tags: ["人间清醒", "幕后Boss", "功成身退"], text: "📜 <strong>【你的性格】</strong> 你是个极其通透的人，聪明绝顶但又极其低调。你就像张良，擅长在幕后运筹帷幄，但你并不迷恋权力。你懂得“功成身退”的道理，拿得起放得下，是真正的高智商玩家。<br><br>💡 <strong>【隐藏反差】</strong> 看似与世无争，其实是因为你看透了一切。一旦有人触碰到你的底线，你的反击绝对干净利落。<br><br>⚠️ <strong>【小建议】</strong> 有时候太通透会让人觉得你有点“独”。试着多参与一些烟火气的活动，享受当下简单的快乐。" },
+        { name: "🎨 达芬奇", dim: {ambition: 4, wisdom: 9, romantic: 8, steady: 3}, tags: ["斜杠青年", "好奇心爆棚", "重度拖延"], text: "🛰️ <strong>【你的性格】</strong> 你脑子里装满了天马行空的想法，是个典型的“斜杠青年”。你对世界充满了好奇心，什么都想学，什么都想试。你就像达芬奇一样，跨界玩得飞起，拥有极高的审美和创造力。<br><br>💡 <strong>【隐藏反差】</strong> 看起来很高产，其实可能有“重度拖延症”。虽然脑子里画了一万张图纸，但可能还有很多没完成。<br><br>⚠️ <strong>【小建议】</strong> 你的精力太分散了！试着聚焦一个目标，把它彻底完成，你会获得巨大的成就感。" },
+        // 浪漫型
+        { name: "🍶 李白", dim: {ambition: 3, wisdom: 5, romantic: 10, steady: 1}, tags: ["浪漫至死", "极致自由", "社交达人"], text: "🌕 <strong>【你的性格】</strong> 人生得意须尽欢！你是一个天生的浪漫主义者和自由灵魂。你受不了任何形式的束缚，说走就走的旅行、半夜突然想看海，这都是你的常规操作。你非常社牛，走到哪都能交到朋友。<br><br>💡 <strong>【隐藏反差】</strong> 虽然表面天天狂欢，但在夜深人静的时候，你其实会感到一丝孤独，你渴望真正的知音。<br><br>⚠️ <strong>【小建议】</strong> 理想很丰满，但现实也得吃饭。稍微培养一点理财意识和长期规划，会让你的人生更加从容。" },
+        { name: "🥢 苏轼", dim: {ambition: 4, wisdom: 7, romantic: 8, steady: 6}, tags: ["乐天派", "情绪稳定", "顶级吃货"], text: "🍲 <strong>【你的性格】</strong> 你绝对是朋友中最受欢迎的人！你像苏轼一样，是个超级无敌乐天派。被贬到哪，就在哪发明美食。你有着极其强大的治愈能力，不仅能治愈自己，还能温暖身边的所有人。情绪稳定是你的代名词。<br><br>💡 <strong>【隐藏反差】</strong> 你的开朗不是没心没肺，而是经历了生活的毒打后，依然选择热爱生活。你懂得很多大道理，但选择用幽默化解一切。<br><br>⚠️ <strong>【小建议】</strong> 记得偶尔把难过留给真正懂你的人。不要总是做别人的情绪垃圾桶，也要照顾好自己的感受。" },
+        { name: "🖌️ 唐伯虎", dim: {ambition: 2, wisdom: 7, romantic: 9, steady: 3}, tags: ["风流才子", "真实不羁", "反内卷"], text: "🎋 <strong>【你的性格】</strong> 别人笑我太疯癫，我笑他人看不穿。你活得极其真实、通透，讨厌世俗的条条框框。你有才华、有品味，并且毫不掩饰自己对美好事物（包括人）的喜爱，是妥妥的“风流才子/才女”。<br><br>💡 <strong>【隐藏反差】</strong> 表面上看着玩世不恭，其实你内心有着极高的道德底线和精神洁癖。你只是不想用世俗的标准来恶心自己。<br><br>⚠️ <strong>【小建议】</strong> 你的才华是稀缺资源，不要为了“反叛”而反叛。找到属于你的那个小天地，尽情施展吧。" },
+        // 沉稳型
+        { name: "🪨 曾国藩", dim: {ambition: 6, wisdom: 7, romantic: 2, steady: 10}, tags: ["自律狂魔", "长期主义", "步步为营"], text: "📚 <strong>【你的性格】</strong> 你是“笨鸟先飞”和“长期主义”的最佳代言人。你像曾国藩一样，深知自己不是天才，所以相信“结硬寨，打呆仗”。你极度自律，做事有极强的规划和忍耐力，只要认准了，就能死磕到底。<br><br>💡 <strong>【隐藏反差】</strong> 别人以为你是个没有感情的机器，其实你有着极强的责任心。你所有的自律和苦心，都是为了保护你爱的人。<br><br>⚠️ <strong>【小建议】</strong> 弦绷得太紧容易断。允许自己偶尔“摆烂”一天，不按计划行事，天也不会塌下来。" },
+        { name: "🧠 王阳明", dim: {ambition: 5, wisdom: 9, romantic: 5, steady: 8}, tags: ["内核强大", "知行合一", "哲学家"], text: "🏔️ <strong>【你的性格】</strong> 你是一个内核极其稳定的人，达到了“知行合一”的境界。你不盲从权威，有自己的价值体系。无论外界多么喧嚣，你都能保持内心的平静。你像王阳明一样，是个能在绝境中悟道的人。<br><br>💡 <strong>【隐藏反差】</strong> 看着像个佛系老干部，但在遇到不公不义之事时，你绝对是那个敢于“平叛”的狠角色。<br><br>⚠️ <strong>【小建议】</strong> 你在精神层面走得太远了，偶尔也要拉回现实，多赚点钱、多享受点世俗的快乐也没错。" },
+        { name: "🎩 华盛顿", dim: {ambition: 7, wisdom: 8, romantic: 3, steady: 9}, tags: ["靠谱稳重", "格局极大", "原则性强"], text: "🏛️ <strong>【你的性格】</strong> 你是一个极其靠谱、有大格局的人。你像华盛顿一样，有着坚定的原则和底线。在面对权力、金钱或诱惑时，你能保持清醒的头脑，知道什么时候该进，什么时候该退，是大家都想抱大腿的存在。<br><br>💡 <strong>【隐藏反差】</strong> 看起来高高在上、非常严肃，其实私底下是个很接地气、甚至有点可爱的人，对家人非常柔软。<br><br>⚠️ <strong>【小建议】</strong> 你太有规矩了，有时候会显得不够灵活。偶尔打破一下常规，尝试点新鲜刺激的事物吧！" }
+    ];
+
+    let currentIdx = 0;
+    let scores = { ambition: 0, wisdom: 0, romantic: 0, steady: 0 };
+    let baseTestCount = 12450;
+
+    function init() { document.getElementById('q-total').innerText = questions.length; }
+
+    function startQuiz() {
+        document.getElementById('page-cover').classList.remove('active');
+        document.getElementById('page-quiz').classList.add('active');
+        currentIdx = 0;
+        for (let k in scores) scores[k] = 0;
+        renderQ();
+    }
+
+    function renderQ() {
+        if (currentIdx >= questions.length) { calcResult(); return; }
+        const q = questions[currentIdx];
+        document.getElementById('q-current').innerText = currentIdx + 1;
+        document.getElementById('question-text').innerText = q.q;
+        document.getElementById('progress-fill').style.width = (currentIdx / questions.length * 100) + '%';
+        
+        const box = document.getElementById('options-container');
+        box.innerHTML = '';
+        const shuffled = q.opts.sort(() => Math.random() - 0.5);
+        shuffled.forEach(opt => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.innerText = opt.t;
+            div.onclick = () => selectOpt(div, opt.val);
+            box.appendChild(div);
+        });
+    }
+
+    function selectOpt(el, val) {
+        if (document.getElementById('options-container').classList.contains('lock')) return;
+        document.getElementById('options-container').classList.add('lock');
+        
+        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+
+        for (let k in val) { if (scores[k] !== undefined) scores[k] += val[k]; }
+
+        setTimeout(() => {
+            document.getElementById('options-container').classList.remove('lock');
+            currentIdx++;
+            renderQ();
+        }, 250);
+    }
+
+    function calcCosineSimilarity(v1, v2) {
+        let dotProduct = 0;
+        let mag1 = 0;
+        let mag2 = 0;
+        for (let k in v1) {
+            dotProduct += v1[k] * v2[k];
+            mag1 += Math.pow(v1[k], 2);
+            mag2 += Math.pow(v2[k], 2);
+        }
+        if (mag1 === 0 || mag2 === 0) return 0;
+        return dotProduct / (Math.sqrt(mag1) * Math.sqrt(mag2));
+    }
+
+    function calcResult() {
+        document.getElementById('page-quiz').classList.remove('active');
+        document.getElementById('page-result').classList.add('active');
+
+        let nowCount = baseTestCount + Math.floor(Math.random() * 5) + 1;
+        document.getElementById('test-count-badge').innerText = `🎉 你是第 ${nowCount} 个找到历史剧本的人`;
+
+        let bestFigure = null;
+        let maxSimilarity = -1; 
+
+        figures.forEach(figure => {
+            let sim = calcCosineSimilarity(scores, figure.dim);
+            // 加入微量随机扰动，避免完全一样
+            sim += (Math.random() * 0.001); 
+            if (sim > maxSimilarity) { 
+                maxSimilarity = sim; 
+                bestFigure = figure; 
+            }
+        });
+
+        document.getElementById('res-name').innerText = bestFigure.name;
+        const tagBox = document.getElementById('res-tags');
+        tagBox.innerHTML = '';
+        bestFigure.tags.forEach(t => {
+            const s = document.createElement('span');
+            s.className = 'tag';
+            s.innerText = '#' + t;
+            tagBox.appendChild(s);
+        });
+        document.getElementById('res-content').innerHTML = bestFigure.text;
+    }
+
+    function restartQuiz() {
+        document.getElementById('page-result').classList.remove('active');
+        document.getElementById('page-cover').classList.add('active');
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
